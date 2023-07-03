@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: postgres:15.1-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+        - "5432:5432"
+    volumes:
+        - postgres_data:/var/lib/postgresql/data
+
+  run_migrations:
+    build: .
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+    depends_on:
+      db:
+        condition: service_healthy
+    command: python manage.py migrate
+
+  api:
+    build: .
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+      DEBUG: false
+    depends_on:
+      run_migrations:
+        condition: service_completed_successfully
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./core:/opt/app/core
+      - ./todolist:/opt/app/todolist
+
+  collect_static:
+    build: .
+    env_file: .env
+    command: python manage.py collectstatic -c --no-input
+    volumes:
+      - django_static:/opt/app/static/
+
+  frontend:
+    image: sermalenk/skypro-front:lesson-34
+    restart: on-failure
+    ports:
+      - "80:80"
+    depends_on:
+      api:
+        condition: service_started
+      collect_static:
+        condition: service_completed_successfully
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf
+      - django_static:/usr/share/nginx/html/static/
+
+
+volumes:
+    postgres_data:
+    django_static:
