@@ -10,6 +10,9 @@ python = "^3.11"
 django = "^4.2.3"
 envparse = "^0.2.0"
 psycopg2-binary = "^2.9.6"
+djangorestframework = "^3.14.0"
+serializers = "^0.2.4"
+social-auth-app-django = "^5.2.0"
 
 
 [tool.poetry.group.dev.dependencies]
