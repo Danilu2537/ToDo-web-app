@@ -1,6 +1,5 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
-from rest_framework.exceptions import NotAuthenticated
 
 from core.fields import PasswordField
 from core.models import User
@@ -40,7 +39,7 @@ class UpdatePasswordSerializer(serializers.Serializer):
     old_password = PasswordField(validate=False)
     new_password = PasswordField()
 
-    def validate(self, attrs: dict) -> dict:
+    def validate_old_password(self, attrs: dict) -> dict:
         if not self.context['request'].user.check_password(attrs['old_password']):
             raise serializers.ValidationError('Invalid password')
         return attrs
