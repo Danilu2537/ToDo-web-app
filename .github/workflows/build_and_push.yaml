@@ -42,3 +42,22 @@ jobs:
           source: "deploy/*"
           target: "todolist"
           strip_components: 1
+      - name: Run Compose
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd todolist
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d
+      - name: Clean Up
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            docker system prune -f -a
