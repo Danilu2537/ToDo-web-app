@@ -33,7 +33,7 @@ services:
     env_file: .env
     environment:
       POSTGRES_HOST: db
-      DEBUG: false
+      DEBUG: 0
     depends_on:
       run_migrations:
         condition: service_completed_successfully
@@ -42,6 +42,7 @@ services:
     volumes:
       - ./core:/opt/app/core
       - ./todolist:/opt/app/todolist
+      - ./goals:/opt/app/goals
 
   collect_static:
     build: .
@@ -51,7 +52,7 @@ services:
       - django_static:/opt/app/static/
 
   frontend:
-    image: sermalenk/skypro-front:lesson-34
+    image: sermalenk/skypro-front:lesson-36
     restart: on-failure
     ports:
       - "80:80"
