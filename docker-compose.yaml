@@ -35,6 +35,8 @@ services:
       POSTGRES_HOST: db
       DEBUG: 0
     depends_on:
+      db:
+        condition: service_healthy
       run_migrations:
         condition: service_completed_successfully
     ports:
@@ -42,7 +44,6 @@ services:
     volumes:
       - ./core:/opt/app/core
       - ./todolist:/opt/app/todolist
-      - ./goals:/opt/app/goals
 
   collect_static:
     build: .
