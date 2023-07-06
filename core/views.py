@@ -5,7 +5,12 @@ from rest_framework.generics import CreateAPIView, GenericAPIView, RetrieveUpdat
 from rest_framework.response import Response
 
 from core.models import User
-from core.serializers import CreateUserSerializer, LoginSerializer, ProfileSerializer, UpdatePasswordSerializer
+from core.serializers import (
+    CreateUserSerializer,
+    LoginSerializer,
+    ProfileSerializer,
+    UpdatePasswordSerializer,
+)
 
 
 class SignUpView(CreateAPIView):
