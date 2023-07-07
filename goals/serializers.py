@@ -8,7 +8,7 @@ class GoalCategoryCreateSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
-        nodel = GoalCategory
+        model = GoalCategory
         read_only_fields = ('id', 'created', 'updated', 'user')
         fields = '__all__'
 
@@ -33,7 +33,7 @@ class GoalCreateSerializer(serializers.ModelSerializer):
         return value
 
     class Meta:
-        nodel = Goal
+        model = Goal
         read_only_fields = ('id', 'created', 'updated', 'user')
         fields = '__all__'
 

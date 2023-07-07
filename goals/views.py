@@ -4,6 +4,7 @@ from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDe
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 
+from goals.filters import GoalDateFilter
 from goals.models import Goal, GoalCategory
 from goals.serializers import (
     GoalCategoryCreateSerializer,
@@ -73,6 +74,7 @@ class GoalListView(ListAPIView):
     serializer_class = GoalSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [filters.OrderingFilter, filters.SearchFilter, DjangoFilterBackend]
+    filterset_class = GoalDateFilter
     ordering_fields = ['title', 'created']
     ordering = ['title']
     search_fields = ['title']

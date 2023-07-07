@@ -19,6 +19,7 @@ class Goal(models.Model):
     title = models.CharField(max_length=255, verbose_name='Название')
     description = models.CharField(max_length=1000, null=True, verbose_name='Описание')
     due_date = models.DateTimeField(null=True, verbose_name='Дата выполнения')
+    is_deleted = models.BooleanField(default=False, verbose_name='Удалена')
     status = models.PositiveSmallIntegerField(
         choices=Status.choices, default=Status.to_do, verbose_name='Статус'
     )
