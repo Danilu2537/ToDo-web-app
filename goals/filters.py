@@ -1,10 +1,11 @@
 import django_filters
 from django.db import models
+from django_filters.rest_framework import FilterSet
 
 from goals.models import Goal
 
 
-class GoalDateFilter(django_filters.FilterSet):
+class GoalDateFilter(FilterSet):
     class Meta:
         model = Goal
         fields = {

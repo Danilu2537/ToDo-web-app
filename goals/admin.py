@@ -1,16 +1,16 @@
 from django.contrib import admin
 
-from goals.models import Goal, GoalCategory
+from goals.models import Goal, GoalCategory, GoalComment
 
 
 @admin.register(GoalCategory)
 class GoalCategoryAdmin(admin.ModelAdmin):
-    readonly_fields = ('created', 'update')
+    readonly_fields = ('created', 'updated')
     list_display = ('id', 'title', 'user')
     search_fields = ('title', 'user')
     fieldsets = (
         (None, {'fields': ('title', 'user', 'is_deleted')}),
-        ('Даты', {'fields': ('created', 'update')}),
+        ('Даты', {'fields': ('created', 'updated')}),
     )
 
 
@@ -34,5 +34,16 @@ class GoalAdmin(admin.ModelAdmin):
                 )
             },
         ),
+        ('Даты', {'fields': ('created', 'updated')}),
+    )
+
+
+@admin.register(GoalComment)
+class GoalCommentAdmin(admin.ModelAdmin):
+    readonly_fields = ('created', 'updated')
+    list_display = ('id', 'text', 'goal', 'user')
+    search_fields = ('goal', 'user', 'text')
+    fieldsets = (
+        (None, {'fields': ('goal', 'user', 'text')}),
         ('Даты', {'fields': ('created', 'updated')}),
     )

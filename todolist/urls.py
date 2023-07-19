@@ -19,7 +19,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('core/', include(('core.urls', 'core'), namespace='core')),
+    path('core/', include('core.urls', namespace='core')),
     path('oauth/', include('social_django.urls', namespace='social')),
-    path('goals/', include('goals.urls')),
+    path('goals/', include('goals.urls', namespace='goals')),
 ]

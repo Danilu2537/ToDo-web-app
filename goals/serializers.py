@@ -1,7 +1,9 @@
 from rest_framework import serializers
+from rest_framework.exceptions import NotFound, PermissionDenied
 
 from core.serializers import ProfileSerializer
-from goals.models import Goal, GoalCategory
+from goals.choices import Status
+from goals.models import Goal, GoalCategory, GoalComment
 
 
 class GoalCategoryCreateSerializer(serializers.ModelSerializer):
@@ -13,13 +15,8 @@ class GoalCategoryCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class GoalCategorySerializer(serializers.ModelSerializer):
+class GoalCategorySerializer(GoalCategoryCreateSerializer):
     user = ProfileSerializer(read_only=True)
-
-    class Meta:
-        model = GoalCategory
-        fields = '__all__'
-        read_only_fields = ('id', 'created', 'updated', 'user')
 
 
 class GoalCreateSerializer(serializers.ModelSerializer):
@@ -27,9 +24,9 @@ class GoalCreateSerializer(serializers.ModelSerializer):
 
     def validate_category(self, value):
         if value.is_deleted:
-            raise serializers.ValidationError('Категория удалена')
+            raise NotFound('Категория не найдена')
         if value.user != self.context['request'].user:
-            raise serializers.ValidationError('Вы не автор категории')
+            raise PermissionDenied('Нет доступа к этой категории')
         return value
 
     class Meta:
@@ -45,3 +42,29 @@ class GoalSerializer(serializers.ModelSerializer):
         model = Goal
         fields = '__all__'
         read_only_fields = ('id', 'created', 'updated', 'user')
+
+
+class GoalCommentCreateSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    def validate_goal(self, value):
+        if value.status == Status.archived:
+            raise NotFound('Цель не найдена')
+        if value.user != self.context['request'].user:
+            raise PermissionDenied('Нет доступа к этой цели')
+        return value
+
+    class Meta:
+        model = GoalComment
+        read_only_fields = ('id', 'created', 'updated', 'user')
+        fields = '__all__'
+
+
+class GoalCommentSerializer(serializers.ModelSerializer):
+    user = ProfileSerializer(read_only=True)
+    goal = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = GoalComment
+        read_only_fields = ('id', 'created', 'updated', 'user', 'goal')
+        fields = '__all__'
