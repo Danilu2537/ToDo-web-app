@@ -4,6 +4,8 @@ from goals.choices import Priority, Status
 
 
 class BaseGoalsModel(models.Model):
+    """Базовый класс для моделей приложения goals, содержит автоматические поля created и updated"""
+
     created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
 
@@ -12,6 +14,8 @@ class BaseGoalsModel(models.Model):
 
 
 class GoalCategory(BaseGoalsModel):
+    """Категория целей"""
+
     title = models.CharField(max_length=255, verbose_name='Название')
     user = models.ForeignKey('core.User', on_delete=models.PROTECT, verbose_name='Автор')
     is_deleted = models.BooleanField(default=False, verbose_name='Удалена')
@@ -22,6 +26,8 @@ class GoalCategory(BaseGoalsModel):
 
 
 class Goal(BaseGoalsModel):
+    """Цель"""
+
     title = models.CharField(max_length=255, verbose_name='Название')
     description = models.CharField(max_length=1000, null=True, verbose_name='Описание')
     due_date = models.DateTimeField(null=True, verbose_name='Дата выполнения')
@@ -39,10 +45,13 @@ class Goal(BaseGoalsModel):
         verbose_name_plural = 'Цели'
 
     def __str__(self):
+        """Строковое представление модели"""
         return self.title
 
 
 class GoalComment(BaseGoalsModel):
+    """Комментарий к цели"""
+
     user = models.ForeignKey('core.User', on_delete=models.PROTECT, verbose_name='Автор')
     goal = models.ForeignKey('Goal', on_delete=models.PROTECT, verbose_name='Цель')
     text = models.TextField(verbose_name='Текст')

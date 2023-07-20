@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
+    """Пользователь"""
+
     REQUIRED_FIELDS = []
 
     class Meta:

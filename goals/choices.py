@@ -2,6 +2,8 @@ from django.db import models
 
 
 class Status(models.IntegerChoices):
+    """Класс для работы со статусом целей"""
+
     to_do = 1, 'К выполнению'
     in_progress = 2, 'В процессе'
     done = 3, 'Выполнено'
@@ -9,6 +11,8 @@ class Status(models.IntegerChoices):
 
 
 class Priority(models.IntegerChoices):
+    """Класс для работы с приоритетом целей"""
+
     low = 1, 'Низкий'
     medium = 2, 'Средний'
     high = 3, 'Высокий'

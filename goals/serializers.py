@@ -7,6 +7,8 @@ from goals.models import Goal, GoalCategory, GoalComment
 
 
 class GoalCategoryCreateSerializer(serializers.ModelSerializer):
+    """Сериализатор для создания категории целей"""
+
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
@@ -16,13 +18,18 @@ class GoalCategoryCreateSerializer(serializers.ModelSerializer):
 
 
 class GoalCategorySerializer(GoalCategoryCreateSerializer):
+    """Сериализатор для получения категории целей"""
+
     user = ProfileSerializer(read_only=True)
 
 
 class GoalCreateSerializer(serializers.ModelSerializer):
+    """Сериализатор для создания цели"""
+
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     def validate_category(self, value):
+        """Проверка категории цели, проверяет, что категория не удалена и принадлежит текущему пользователю"""
         if value.is_deleted:
             raise NotFound('Категория не найдена')
         if value.user != self.context['request'].user:
@@ -36,6 +43,8 @@ class GoalCreateSerializer(serializers.ModelSerializer):
 
 
 class GoalSerializer(serializers.ModelSerializer):
+    """Сериализатор для получения цели"""
+
     user = ProfileSerializer(read_only=True)
 
     class Meta:
@@ -45,9 +54,12 @@ class GoalSerializer(serializers.ModelSerializer):
 
 
 class GoalCommentCreateSerializer(serializers.ModelSerializer):
+    """Сериализатор для создания комментария к цели"""
+
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     def validate_goal(self, value):
+        """Проверка цели, проверяет, что цель не архивирована и принадлежит текущему пользователю"""
         if value.status == Status.archived:
             raise NotFound('Цель не найдена')
         if value.user != self.context['request'].user:
@@ -61,6 +73,8 @@ class GoalCommentCreateSerializer(serializers.ModelSerializer):
 
 
 class GoalCommentSerializer(serializers.ModelSerializer):
+    """Сериализатор для получения комментария к цели"""
+
     user = ProfileSerializer(read_only=True)
     goal = serializers.PrimaryKeyRelatedField(read_only=True)
 

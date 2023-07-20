@@ -6,6 +6,8 @@ from goals.models import Goal
 
 
 class GoalDateFilter(FilterSet):
+    """Фильтр для работы с целью, работает с полями due_date, category, status, priority"""
+
     class Meta:
         model = Goal
         fields = {
