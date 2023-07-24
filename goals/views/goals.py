@@ -22,14 +22,7 @@ class GoalView(RetrieveUpdateDestroyAPIView):
 
     serializer_class = GoalSerializer
     permission_classes = [GoalPermission]
-
-    def get_queryset(self):
-        """Получение цели для текущего пользователя"""
-        return (
-            Goal.objects.select_related('user')
-            .filter(category__is_deleted=False)
-            .exclude(status=Status.archived)
-        )
+    queryset = Goal.objects.exclude(status=Status.archived)
 
     def perform_destroy(self, instance):
         """Архивирование цели при удалении"""
@@ -50,8 +43,6 @@ class GoalListView(ListAPIView):
 
     def get_queryset(self):
         """Получение списка целей для текущего пользователя"""
-        return (
-            Goal.objects.select_related('user')
-            .filter(user=self.request.user, category__is_deleted=False)
-            .exclude(status=Status.archived)
-        )
+        return Goal.objects.filter(
+            category__board__participants__user=self.request.user, category__is_deleted=False
+        ).exclude(status=Status.archived)

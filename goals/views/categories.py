@@ -1,9 +1,11 @@
 from django.db import transaction
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from goals.choices import Status
+from goals.filters import GoalCategoryFilter
 from goals.models import GoalCategory
 from goals.permissions import GoalCategoryPermission
 from goals.serializers import GoalCategoryCreateSerializer, GoalCategorySerializer
@@ -19,9 +21,10 @@ class GoalCategoryCreateView(CreateAPIView):
 class GoalCategoryListView(ListAPIView):
     """Вью для получения списка категорий целей"""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [GoalCategoryPermission]
     serializer_class = GoalCategorySerializer
-    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter, DjangoFilterBackend]
+    filterset_class = GoalCategoryFilter
     ordering_fields = ['title', 'created']
     ordering = ['title']
     search_fields = ['title']
@@ -29,7 +32,7 @@ class GoalCategoryListView(ListAPIView):
     def get_queryset(self):
         """Получение списка категорий целей для текущего пользователя"""
         return GoalCategory.objects.select_related('user').filter(
-            user=self.request.user, is_deleted=False
+            board__participants__user=self.request.user, is_deleted=False
         )
 
 
@@ -39,9 +42,7 @@ class GoalCategoryView(RetrieveUpdateDestroyAPIView):
     serializer_class = GoalCategorySerializer
     permission_classes = [GoalCategoryPermission]
 
-    def get_queryset(self):
-        """Получение категории целей для текущего пользователя"""
-        return GoalCategory.objects.select_related('user').exclude(is_deleted=True)
+    queryset = GoalCategory.objects.exclude(is_deleted=True)
 
     def perform_destroy(self, instance):
         """Удаление категории целей и всех ее целей"""

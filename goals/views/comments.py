@@ -1,4 +1,4 @@
-from django_filters.rest_framework import DjangoFilterBackend, filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -26,7 +26,9 @@ class GoalCommentListView(ListAPIView):
 
     def get_queryset(self):
         """Получение списка комментариев к цели для текущего пользователя"""
-        return GoalComment.objects.select_related('user').filter(user=self.request.user)
+        return GoalComment.objects.filter(
+            goal__category__board__participants__user=self.request.user
+        )
 
 
 class GoalCommentDetailView(RetrieveUpdateDestroyAPIView):
@@ -36,5 +38,7 @@ class GoalCommentDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = GoalCommentSerializer
 
     def get_queryset(self):
-        """Получение комментария к цели для текущего пользователя"""
-        return GoalComment.objects.select_related('user')
+        """Получение списка комментариев к цели для текущего пользователя"""
+        return GoalComment.objects.select_related('user').filter(
+            goal__category__board__participants__user=self.request.user
+        )

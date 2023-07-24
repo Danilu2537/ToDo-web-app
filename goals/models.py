@@ -1,6 +1,6 @@
 from django.db import models
 
-from goals.choices import Priority, Status
+from goals.choices import Priority, Role, Status
 
 
 class BaseGoalsModel(models.Model):
@@ -13,9 +13,55 @@ class BaseGoalsModel(models.Model):
         abstract = True
 
 
+class Board(BaseGoalsModel):
+    """Доска"""
+
+    title = models.CharField(max_length=255, verbose_name='Название')
+    is_deleted = models.BooleanField(default=False, verbose_name='Удалена')
+
+    class Meta:
+        verbose_name = 'Доска'
+        verbose_name_plural = 'Доски'
+
+    def __str__(self):
+        return self.title
+
+
+class BoardParticipant(BaseGoalsModel):
+    """Участник доски"""
+
+    title = models.CharField(verbose_name='Название', max_length=255)
+    is_deleted = models.BooleanField(verbose_name='Удалена', default=False)
+    board = models.ForeignKey(
+        Board, verbose_name='Доска', on_delete=models.PROTECT, related_name='participants'
+    )
+    user = models.ForeignKey(
+        'core.User',
+        verbose_name='Пользователь',
+        on_delete=models.PROTECT,
+        related_name='participants',
+    )
+    role = models.PositiveSmallIntegerField(
+        verbose_name='Роль', choices=Role.choices, default=Role.owner
+    )
+
+    editable_roles = Role.choices[1:]
+
+    class Meta:
+        unique_together = ('board', 'user')
+        verbose_name = 'Участник'
+        verbose_name_plural = 'Участники'
+
+    def __str__(self):
+        return self.title
+
+
 class GoalCategory(BaseGoalsModel):
     """Категория целей"""
 
+    board = models.ForeignKey(
+        Board, on_delete=models.PROTECT, related_name='categories', verbose_name='Доска'
+    )
     title = models.CharField(max_length=255, verbose_name='Название')
     user = models.ForeignKey('core.User', on_delete=models.PROTECT, verbose_name='Автор')
     is_deleted = models.BooleanField(default=False, verbose_name='Удалена')
@@ -29,7 +75,7 @@ class Goal(BaseGoalsModel):
     """Цель"""
 
     title = models.CharField(max_length=255, verbose_name='Название')
-    description = models.CharField(max_length=1000, null=True, verbose_name='Описание')
+    description = models.CharField(max_length=1000, blank=True, null=True, verbose_name='Описание')
     due_date = models.DateTimeField(null=True, verbose_name='Дата выполнения')
     status = models.PositiveSmallIntegerField(
         choices=Status.choices, default=Status.to_do, verbose_name='Статус'

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from goals import views
+from goals.views.boards import BoardCreateView, BoardListView, BoardView
 from goals.views.categories import GoalCategoryCreateView, GoalCategoryListView, GoalCategoryView
 from goals.views.comments import GoalCommentCreateView, GoalCommentDetailView, GoalCommentListView
 from goals.views.goals import GoalCreateView, GoalListView, GoalView
@@ -8,6 +8,10 @@ from goals.views.goals import GoalCreateView, GoalListView, GoalView
 app_name = 'goals'
 
 urlpatterns = [
+    # Эндпоинты для работы с досками
+    path('board/create', BoardCreateView.as_view(), name='create-board'),
+    path('board/list', BoardListView.as_view(), name='list-board'),
+    path('board/<int:pk>', BoardView.as_view(), name='detail-board'),
     # Эндпоинты для работы с категориями целей
     path('goal_category/create', GoalCategoryCreateView.as_view(), name='create-category'),
     path('goal_category/list', GoalCategoryListView.as_view(), name='list-category'),
