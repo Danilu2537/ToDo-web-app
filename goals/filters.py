@@ -6,6 +6,8 @@ from goals.models import Goal, GoalCategory
 
 
 class GoalCategoryFilter(FilterSet):
+    """Фильтр для работы с категориями целей, фильтрует категории по доскам"""
+
     class Meta:
         model = GoalCategory
         fields = {'board': ('exact',)}

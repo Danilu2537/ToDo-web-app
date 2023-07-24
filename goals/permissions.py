@@ -30,7 +30,7 @@ class GoalPermission(IsAuthenticated):
     """Проверка на владельца цели"""
 
     def has_object_permission(self, request, view, obj):
-        _filters = {'user': request.user, 'board': obj.board}
+        _filters = {'user': request.user, 'board': obj.category.board}
         if request.method not in SAFE_METHODS:
             _filters['role__in'] = [Role.owner, Role.writer]
 

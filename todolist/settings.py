@@ -9,8 +9,7 @@ if ENV_PATH.is_file():
 
 SECRET_KEY = env.str('SECRET_KEY')
 
-DEBUG = True
-# DEBUG = env.bool('DEBUG', default=False)
+DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = ['*']
 
@@ -28,8 +27,8 @@ INSTALLED_APPS = [
     'goals',
 ]
 
-# if DEBUG:
-#     INSTALLED_APPS += ['django_extensions']
+if DEBUG:
+    INSTALLED_APPS += ['django_extensions']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
