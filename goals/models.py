@@ -30,7 +30,6 @@ class Board(BaseGoalsModel):
 class BoardParticipant(BaseGoalsModel):
     """Участник доски"""
 
-    title = models.CharField(verbose_name='Название', max_length=255)
     is_deleted = models.BooleanField(verbose_name='Удалена', default=False)
     board = models.ForeignKey(
         Board, verbose_name='Доска', on_delete=models.PROTECT, related_name='participants'

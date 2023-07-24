@@ -33,7 +33,7 @@ class BoardWithParticipantsSerializer(BoardSerializer):
     participants = ParticipantSerializer(many=True)
 
     def update(self, instance: Board, validated_data: dict):
-        owner = validated_data.pop('user')
+        owner = self.context['request'].user
         new_participants = validated_data.pop('participants')
         new_by_id = {part['user'].id: part for part in new_participants}
 

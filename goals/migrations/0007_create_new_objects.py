@@ -13,7 +13,7 @@ def create_new_objects(apps, schema_editor) -> None:
 
     with transaction.atomic():
         for user in User.objects.all():
-            new_board = Board.objects.create(title="Мои цели", created=now, updated=now)
+            new_board = Board.objects.create(title='Мои цели', created=now, updated=now)
             BoardParticipant.objects.create(board=new_board, user=user, role=1, created=now, updated=now)
             GoalCategory.objects.filter(user=user).update(board=new_board)
 
