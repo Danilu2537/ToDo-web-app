@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'social_django',
     'core',
     'goals',
+    'bot',
 ]
 
 if DEBUG:
@@ -107,3 +108,25 @@ AUTHENTICATION_BACKENDS = (
 )
 
 REST_FRAMEWORK = {'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'}
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {'verbose': {'format': '%(levelname)s %(asctime)s %(message)s'}},
+    'handlers': {
+        'console': {'level': 'DEBUG', 'class': 'logging.StreamHandler', 'formatter': 'verbose'},
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR.joinpath('logs', 'debug.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {'handlers': ['console', 'file'], 'level': 'DEBUG', 'propagate': True},
+        'urllib3': {'handlers': ['console', 'file'], 'level': 'DEBUG', 'propagate': True},
+    },
+}
+
+BOT_TOKEN = env.str('BOT_TOKEN')
