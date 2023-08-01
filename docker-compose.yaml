@@ -18,6 +18,56 @@ services:
     volumes:
         - postgres_data:/var/lib/postgresql/data
 
+  run_migrations:
+    build: .
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+    depends_on:
+      db:
+        condition: service_healthy
+    command: python manage.py migrate
+
+  api:
+    build: .
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+      DEBUG: 'False'
+    depends_on:
+      db:
+        condition: service_healthy
+      run_migrations:
+        condition: service_completed_successfully
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./core:/opt/app/core
+      - ./goals:/opt/app/goals
+      - ./todolist:/opt/app/todolist
+
+  collect_static:
+    build: .
+    env_file: .env
+    command: python manage.py collectstatic -c --no-input
+    volumes:
+      - django_static:/opt/app/static/
+
+  frontend:
+    image: sermalenk/skypro-front:lesson-37
+    restart: on-failure
+    ports:
+      - "80:80"
+    depends_on:
+      api:
+        condition: service_started
+      collect_static:
+        condition: service_completed_successfully
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf
+      - django_static:/usr/share/nginx/html/static/
+
 
 volumes:
     postgres_data:
+    django_static:
