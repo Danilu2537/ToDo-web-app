@@ -25,11 +25,17 @@ class TgClient:
     def __get_url(self, method: str) -> str:
         return f'{self.__base_url}{method}'
 
-    def get_updates(self, offset: int = 0, timeout: int = 0, **kwargs) -> GetUpdatesResponse:
-        data = self._get('getUpdates', offset=offset, timeout=timeout, **kwargs)
+    def get_updates(
+        self, offset: int = 0, timeout: int = 0, **kwargs
+    ) -> GetUpdatesResponse:
+        data = self._get(
+            'getUpdates', offset=offset, timeout=timeout, **kwargs
+        )
         return self.__serialize_tg_response(GetUpdatesResponse, data)
 
-    def send_message(self, chat_id: int, text: str, **kwargs) -> SendMessageResponse:
+    def send_message(
+        self, chat_id: int, text: str, **kwargs
+    ) -> SendMessageResponse:
         data = self._get('sendMessage', chat_id=chat_id, text=text, **kwargs)
         return self.__serialize_tg_response(SendMessageResponse, data)
 
@@ -38,7 +44,11 @@ class TgClient:
         params.setdefault('timeout', 10)
         response = requests.get(url, params=params)
         if not response.ok:
-            logger.warning('Invalid status code %d from command %s', response.status_code, method)
+            logger.warning(
+                'Invalid status code %d from command %s',
+                response.status_code,
+                method,
+            )
             raise TgClientError
         return response.json()
 

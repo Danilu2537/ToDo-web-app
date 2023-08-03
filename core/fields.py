@@ -3,8 +3,6 @@ from rest_framework import serializers
 
 
 class PasswordField(serializers.CharField):
-    """Поле для пароля с валидацией"""
-
     def __init__(self, validate: bool = True, **kwargs):
         kwargs['style'] = {'input_type': 'password'}
         kwargs.setdefault('write_only', True)

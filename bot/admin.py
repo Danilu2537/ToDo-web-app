@@ -8,10 +8,19 @@ from bot.models import TgUser
 @admin.register(TgUser)
 class TgUserAdmin(admin.ModelAdmin):
     readonly_fields = ('chat_id', 'username', 'user', 'verification_code')
-    list_display = ('chat_id', 'username', 'user', 'verification_code', 'is_verified')
+    list_display = (
+        'chat_id',
+        'username',
+        'user',
+        'verification_code',
+        'is_verified',
+    )
     search_fields = ('chat_id', 'username')
     fieldsets = (
-        (None, {'fields': ('chat_id', 'username', 'user', 'verification_code')}),
+        (
+            None,
+            {'fields': ('chat_id', 'username', 'user', 'verification_code')},
+        ),
     )
 
     def tg_user(self, obj: TgUser) -> str | None:

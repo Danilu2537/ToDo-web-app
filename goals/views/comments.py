@@ -1,11 +1,18 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    CreateAPIView,
+    ListAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
 from rest_framework.permissions import IsAuthenticated
 
 from goals.models import GoalComment
 from goals.permissions import GoalCommentPermission
-from goals.serializers import GoalCommentCreateSerializer, GoalCommentSerializer
+from goals.serializers import (
+    GoalCommentCreateSerializer,
+    GoalCommentSerializer,
+)
 
 
 class GoalCommentCreateView(CreateAPIView):

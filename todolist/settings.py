@@ -73,10 +73,16 @@ DATABASES = {
 }
 
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'
+    },
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'
+    },
 ]
 
 LANGUAGE_CODE = 'ru-ru'
@@ -107,25 +113,41 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-REST_FRAMEWORK = {'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'}
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
+}
 
 
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {'verbose': {'format': '%(levelname)s %(asctime)s %(message)s'}},
+    'formatters': {
+        'verbose': {'format': '%(levelname)s %(asctime)s %(message)s'}
+    },
     'handlers': {
-        'console': {'level': 'DEBUG', 'class': 'logging.StreamHandler', 'formatter': 'verbose'},
+        'console': {
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
         'file': {
-            'level': 'DEBUG',
+            'level': 'DEBUG' if DEBUG else 'INFO',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR.joinpath('logs', 'debug.log'),
             'formatter': 'verbose',
         },
     },
     'loggers': {
-        'django': {'handlers': ['console', 'file'], 'level': 'DEBUG', 'propagate': True},
-        'urllib3': {'handlers': ['console', 'file'], 'level': 'DEBUG', 'propagate': True},
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'urllib3': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
 }
 

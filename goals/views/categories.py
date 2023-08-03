@@ -1,14 +1,21 @@
 from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    CreateAPIView,
+    ListAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
 from rest_framework.permissions import IsAuthenticated
 
 from goals.choices import Status
 from goals.filters import GoalCategoryFilter
 from goals.models import GoalCategory
 from goals.permissions import GoalCategoryPermission
-from goals.serializers import GoalCategoryCreateSerializer, GoalCategorySerializer
+from goals.serializers import (
+    GoalCategoryCreateSerializer,
+    GoalCategorySerializer,
+)
 
 
 class GoalCategoryCreateView(CreateAPIView):
@@ -23,7 +30,11 @@ class GoalCategoryListView(ListAPIView):
 
     permission_classes = [GoalCategoryPermission]
     serializer_class = GoalCategorySerializer
-    filter_backends = [filters.OrderingFilter, filters.SearchFilter, DjangoFilterBackend]
+    filter_backends = [
+        filters.OrderingFilter,
+        filters.SearchFilter,
+        DjangoFilterBackend,
+    ]
     filterset_class = GoalCategoryFilter
     ordering_fields = ['title', 'created']
     ordering = ['title']

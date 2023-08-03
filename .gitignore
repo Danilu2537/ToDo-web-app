@@ -1,4 +1,7 @@
+/.vscode
 /.venv
 /.idea
 **/__pycache__
 /.logs/debug.log
+/.env
+/static

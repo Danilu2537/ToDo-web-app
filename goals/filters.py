@@ -6,16 +6,12 @@ from goals.models import Goal, GoalCategory
 
 
 class GoalCategoryFilter(FilterSet):
-    """Фильтр для работы с категориями целей, фильтрует категории по доскам"""
-
     class Meta:
         model = GoalCategory
         fields = {'board': ('exact',)}
 
 
 class GoalDateFilter(FilterSet):
-    """Фильтр для работы с целью, работает с полями due_date, category, status, priority"""
-
     class Meta:
         model = Goal
         fields = {
@@ -25,4 +21,8 @@ class GoalDateFilter(FilterSet):
             'priority': ('exact', 'in'),
         }
 
-    filter_overrides = {models.DateTimeField: {'filter_class': django_filters.IsoDateTimeFilter}}
+    filter_overrides = {
+        models.DateTimeField: {
+            'filter_class': django_filters.IsoDateTimeFilter
+        }
+    }
