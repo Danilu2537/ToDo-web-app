@@ -8,5 +8,3 @@
 !pyproject.toml
 !poetry.lock
 !logs
-
-logs/debug.log

@@ -33,8 +33,6 @@ services:
       run_migrations:
         condition: service_completed_successfully
     command: python manage.py runbot
-    volumes:
-      - ./bot:/opt/app/bot
 
   api:
     image: ${DOCKERHUB_USER}/diplom:latest
