@@ -14,7 +14,7 @@ services:
       timeout: 5s
       retries: 10
     volumes:
-        - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
 
   run_migrations:
     image: ${DOCKERHUB_USER}/diplom:latest
@@ -23,6 +23,18 @@ services:
       db:
         condition: service_healthy
     command: python manage.py migrate
+
+  bot:
+    build: .
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+    depends_on:
+      run_migrations:
+        condition: service_completed_successfully
+    command: python manage.py runbot
+    volumes:
+      - ./bot:/opt/app/bot
 
   api:
     image: ${DOCKERHUB_USER}/diplom:latest
@@ -39,7 +51,7 @@ services:
       - django_static:/opt/app/static/
 
   frontend:
-    image: sermalenk/skypro-front:lesson-37
+    image: sermalenk/skypro-front:lesson-38
     restart: on-failure
     ports:
       - "80:80"
@@ -52,7 +64,6 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - django_static:/usr/share/nginx/html/static/
 
-
 volumes:
-    postgres_data:
-    django_static:
+  postgres_data:
+  django_static:

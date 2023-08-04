@@ -16,7 +16,11 @@ class TgUser(models.Model):
         verbose_name='Пользователь',
     )
     verification_code = models.CharField(
-        max_length=20, null=True, blank=True, verbose_name='Код подтверждения'
+        max_length=20,
+        unique=True,
+        null=True,
+        blank=True,
+        verbose_name='Код подтверждения',
     )
 
     @property
@@ -29,9 +33,15 @@ class TgUser(models.Model):
 
         return ''.join(random.choices('0123456789', k=4))
 
-    def update_verification_code(self) -> None:
-        self.verification_code = self._generate_verification_code()
+    def update_verification_code(self, drop: bool = False) -> None:
+        self.verification_code = (
+            None if drop else self._generate_verification_code()
+        )
         self.save(update_fields=['verification_code'])
 
     def __str__(self):
         return f'{self.__class__.__name__} ({self.chat_id})'
+
+    class Meta:
+        verbose_name = 'Пользователь Telegram'
+        verbose_name_plural = 'Пользователи Telegram'

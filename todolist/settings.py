@@ -23,13 +23,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'social_django',
+    'drf_spectacular',
     'core',
     'goals',
     'bot',
 ]
-
-if DEBUG:
-    INSTALLED_APPS += ['django_extensions']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -114,9 +112,16 @@ AUTHENTICATION_BACKENDS = (
 )
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Todolist API',
+    'DESCRIPTION': 'Awesome Todolist project',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 LOGGING = {
     'version': 1,
