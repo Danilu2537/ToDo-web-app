@@ -25,7 +25,7 @@ services:
     command: python manage.py migrate
 
   bot:
-    build: .
+    image: ${DOCKERHUB_USER}/diplom:latest
     env_file: .env
     environment:
       POSTGRES_HOST: db
