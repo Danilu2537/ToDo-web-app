@@ -1,7 +1,9 @@
 /.vscode
 /.venv
 /.idea
-**/__pycache__
+/.pytest_cache
 /.logs/debug.log
 /.env
 /static
+**/__pycache__
+
