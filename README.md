@@ -1,81 +1,82 @@
-# Дипломный проект
-## Домашняя работа №37
-
-### Описание
-
----
-
-Проект по работе с целями. Каждому пользователю доступны цели, которые он может создавать, редактировать, удалять,
-писать комментарии. Каждая цель имеет свои статус и приоритет, а также дату дедлайна.
+# ToDo web-app
 
 
-### Используется
+The project is about goal management. Each user has access to goals that they can create, edit, delete, and comment on. Each goal has its own status, priority, and deadline date. There is also a functionality to control certain features through a Telegram bot, for which verification is provided.
+
+### Used
 
 ---
 
 - Python 3.11
 - Django 4.2.3
 - Django REST Framework 3.14.0
-- Авторизация через VK Social Auth
-- База данных PostgreSQL
+- VK Social Auth
+- PostgreSQL
 - Docker
 - Docker-compose
 - Nginx
 
-### Установка
+### Installation
 
 ---
 ### Linux
-1. Склонировать репозиторий
+1. Clone Repository
 
     ```bash
     git clone https://github.com/Danilu2537/diplom.git
     ```
-2. Установить Docker и Docker-compose
+2. Install Docker and Docker-compose
 
     ```bash
     sudo apt install docker docker-compose
     ```
+3. Create file .env and fill it according to the contents of .env.example
 
-### Запуск
+    > Create a bot and get a token \
+    > https://t.me/BotFather
+
+    > Get Secret keys for VK OAuth \
+    > https://vk.com/apps?act=manage
+
+### Usage
 
 ---
 
-1. Перейти в папку с проектом
+1. Go to the project folder
 
     ```bash
-    cd diplom
+    cd ToDo-web-app
     ```
 
-2. Запустить docker-compose
+2. Launch docker-compose
 
     ```bash
     sudo docker-compose up
     ```
 
-3. Перейти в браузере по адресу http://localhost
+3. Go to the address in the browser http://localhost
 
-### Добавление суперпользователя
+### Create a Superuser
 
 ---
 
-1. Перейти в контейнер api
+1. Go to the api container
 
     ```bash
     sudo docker exec -it api bash
     ```
 
-2. Создать суперпользователя
+2. Create a Superuser
 
     ```bash
     python manage.py createsuperuser
     ```
 
-### Документация
+### Documentation
 
 ---
 
-1. ...
+API documentation is available at: \
+    http://localhost:8000/schema \
+    http://localhost:8000/schema/swagger-ui
 
-
->В работе
