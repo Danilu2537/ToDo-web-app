@@ -7,8 +7,8 @@ from goals.models import Goal, GoalCategory
 
 
 class FSM:
-    def __init__(self):
-        self.send_message: callable = TgClient().send_message
+    def __init__(self, send_message: callable):
+        self.send_message: callable = send_message
         self.create_list: list[callable] = [
             self.get_category,
             self.get_title,
@@ -20,27 +20,31 @@ class FSM:
     def __getitem__(self, item):
         return self.users.get(item)
 
+    def drop(self, id: int):
+        del self.users[id]
+
     def start_create(self, message: Message, user: TgUser):
         categories = self.indent.join(
-            GoalCategory.objects.all()
-            .filter(user=user.user)
-            .values_list('title', flat=True)
+            GoalCategory.objects.filter(user=user.user).values_list(
+                'title', flat=True
+            )
         )
-        self.send_message(
-            message.chat.id,
-            f'Создание цели:\n'
+        message_text = (
+            'Создание цели:\n'
             f'Ваши категории:\n   {categories}\n'
-            f'Введите название категории',
+            'Введите название категории'
         )
-        self.users[message.chat.id] = self.UserState(user, self.create_list)
+        self.send_message(message.chat.id, message_text)
+        self.users[message.chat.id] = self.UserState(
+            user, self.create_list, self.send_message
+        )
         return True
 
     def get_category(self, message: Message, user: TgUser):
-        try:
-            goal_category = GoalCategory.objects.get(
-                title=message.text, user=user.user
-            )
-        except GoalCategory.DoesNotExist:
+        goal_category = GoalCategory.objects.filter(
+            title=message.text, user=user.user
+        ).first()
+        if not goal_category:
             self.send_message(
                 message.chat.id, f'Категория "{message.text}" не найдена'
             )
@@ -49,28 +53,29 @@ class FSM:
             message.chat.id,
             f'Категория "{message.text}"\n' f'Введите название цели',
         )
-        return {"category": goal_category}
+        return {'category': goal_category}
 
     def get_title(self, message: Message, user: TgUser):
         if not message.text:
             self.send_message(message.chat.id, 'Введите название цели')
             return None
-        self.send_message(
-            message.chat.id, f'Цель "{message.text}"\n' f'Введите описание'
-        )
-        return {"title": message.text}
+        self.send_message(message.chat.id, f'Цель "{message.text}"')
+        self.send_message(message.chat.id, 'Введите описание')
+        return {'title': message.text}
 
     def get_description(self, message: Message, user: TgUser):
         self.send_message(message.chat.id, f'Описание "{message.text}"\n')
-        return {"description": message.text}
+        return {'description': message.text}
 
     class UserState:
-        def __init__(self, user: TgUser, steps: list[callable]):
-            self.send_message = TgClient().send_message
+        def __init__(
+            self, user: TgUser, steps: list[callable], send_message: callable
+        ):
+            self.send_message = send_message
             self.user = user
+            self.items = {}
             self.steps = iter(steps)
             self.step = next(self.steps)
-            self.items = {}
 
         def __call__(self, *args, **kwargs):
             if item := self.step(*args, **kwargs):
@@ -90,8 +95,8 @@ class FSM:
 class Command(BaseCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.FSM = FSM()
         self._bot = TgClient()
+        self.FSM = FSM(self._bot.send_message)
 
     def handle(self, *args, **options):
         offset = 0
@@ -129,10 +134,10 @@ class Command(BaseCommand):
                     text = (
                         Goal.objects.all()
                         .exclude(status=4)
-                        .values_list("title", 'due_date', "description")
+                        .values_list('title', 'due_date', 'description')
                     )
                     text = [
-                        f'{item[0]}\n{item[1] or "Нет времени"}\n{item[2]}'
+                        f'{item[0]}\n  {item[1].strftime("%d.%m.%Y") if item[1] else "Нет времени"}\n  {item[2] or "Нет описания"}'
                         for item in text
                     ]
                     text = '\n'.join(text)
@@ -142,13 +147,25 @@ class Command(BaseCommand):
                 case '/create':
                     self.FSM.start_create(message, tg_user)
                 case '/cancel':
-                    del self.FSM[message.chat.id]
+                    if self.FSM[message.chat.id]:
+                        self.FSM.drop(message.chat.id)
+                        self._bot.send_message(
+                            message.chat.id, 'Операция отменена'
+                        )
+                    else:
+                        self._bot.send_message(
+                            message.chat.id, 'Нечего отменять'
+                        )
+                case _:
                     self._bot.send_message(
-                        message.chat.id, 'Операция отменена'
+                        message.chat.id, 'Неизвестная команда'
                     )
+
         else:
             if not (state := self.FSM[message.chat.id]):
-                self._bot.send_message(message.chat.id, f'Лилка')
+                self._bot.send_message(
+                    message.chat.id, f'Напишите команду /create чтобы начать.'
+                )
             else:
                 if state(message, tg_user):
-                    del self.FSM[message.chat.id]
+                    self.FSM.drop(message.chat.id)
