@@ -3,6 +3,6 @@
 /.idea
 /.pytest_cache
 /.env
-/logs/debug.log
 /static
+*.log
 **/__pycache__
