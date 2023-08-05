@@ -2,7 +2,7 @@
 /.venv
 /.idea
 /.pytest_cache
-/.logs/debug.log
 /.env
+/logs/debug.log
 /static
 **/__pycache__
