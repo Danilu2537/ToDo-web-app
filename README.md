@@ -14,7 +14,6 @@ The project is about goal management. Each user has access to goals that they ca
 - PostgreSQL
 - Docker
 - Docker-compose
-- Nginx
 
 ### Installation
 
@@ -23,7 +22,7 @@ The project is about goal management. Each user has access to goals that they ca
 1. Clone Repository
 
     ```bash
-    git clone https://github.com/Danilu2537/diplom.git
+    git clone https://github.com/Danilu2537/ToDo-web-app.git
     ```
 2. Install Docker and Docker-compose
 
@@ -76,7 +75,7 @@ The project is about goal management. Each user has access to goals that they ca
 
 ---
 
-API documentation is available at: \
+API documentation after runnning is available at: \
     http://localhost:8000/schema \
     http://localhost:8000/schema/swagger-ui
 
