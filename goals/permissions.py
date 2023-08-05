@@ -5,8 +5,6 @@ from goals.models import BoardParticipant
 
 
 class BoardPermission(IsAuthenticated):
-    """Проверка на владельца доски"""
-
     def has_object_permission(self, request, view, obj):
         _filters = {'user': request.user, 'board': obj}
         if request.method not in SAFE_METHODS:
@@ -16,8 +14,6 @@ class BoardPermission(IsAuthenticated):
 
 
 class GoalCategoryPermission(IsAuthenticated):
-    """Проверка на владельца категории целей"""
-
     def has_object_permission(self, request, view, obj):
         _filters = {'user': request.user, 'board': obj.board}
         if request.method not in SAFE_METHODS:
@@ -27,8 +23,6 @@ class GoalCategoryPermission(IsAuthenticated):
 
 
 class GoalPermission(IsAuthenticated):
-    """Проверка на владельца цели"""
-
     def has_object_permission(self, request, view, obj):
         _filters = {'user': request.user, 'board': obj.category.board}
         if request.method not in SAFE_METHODS:
@@ -38,8 +32,6 @@ class GoalPermission(IsAuthenticated):
 
 
 class GoalCommentPermission(IsAuthenticated):
-    """Проверка на владельца комментария к цели"""
-
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True

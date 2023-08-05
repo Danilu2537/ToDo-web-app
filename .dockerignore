@@ -3,6 +3,8 @@
 !goals
 !core
 !todolist
+!bot
 !manage.py
 !pyproject.toml
 !poetry.lock
+!logs

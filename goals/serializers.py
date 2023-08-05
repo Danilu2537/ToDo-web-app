@@ -5,14 +5,20 @@ from rest_framework.exceptions import NotFound, PermissionDenied
 from core.models import User
 from core.serializers import ProfileSerializer
 from goals.choices import Role, Status
-from goals.models import Board, BoardParticipant, Goal, GoalCategory, GoalComment
+from goals.models import (
+    Board,
+    BoardParticipant,
+    Goal,
+    GoalCategory,
+    GoalComment,
+)
 
 
 class ParticipantSerializer(serializers.ModelSerializer):
-    """Сериализатор для получения участников доски"""
-
     role = serializers.ChoiceField(choices=BoardParticipant.editable_roles)
-    user = serializers.SlugRelatedField(slug_field='username', queryset=User.objects.all())
+    user = serializers.SlugRelatedField(
+        slug_field='username', queryset=User.objects.all()
+    )
 
     class Meta:
         model = BoardParticipant
@@ -28,8 +34,6 @@ class BoardSerializer(serializers.ModelSerializer):
 
 
 class BoardWithParticipantsSerializer(BoardSerializer):
-    """Сериализатор для получения досок с участниками"""
-
     participants = ParticipantSerializer(many=True)
 
     def update(self, instance: Board, validated_data: dict):
@@ -43,13 +47,20 @@ class BoardWithParticipantsSerializer(BoardSerializer):
                 if old_participant.user_id not in new_by_id:
                     old_participant.delete()
                 else:
-                    if old_participant.role != new_by_id[old_participant.user_id]['role']:
-                        old_participant.role = new_by_id[old_participant.user_id]['role']
+                    if (
+                        old_participant.role
+                        != new_by_id[old_participant.user_id]['role']
+                    ):
+                        old_participant.role = new_by_id[
+                            old_participant.user_id
+                        ]['role']
                         old_participant.save()
                     new_by_id.pop(old_participant.user_id)
             for new_part in new_by_id.values():
                 BoardParticipant.objects.create(
-                    board=instance, user=new_part['user'], role=new_part['role']
+                    board=instance,
+                    user=new_part['user'],
+                    role=new_part['role'],
                 )
 
             instance.title = validated_data['title']
@@ -59,15 +70,15 @@ class BoardWithParticipantsSerializer(BoardSerializer):
 
 
 class GoalCategoryCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания категории целей"""
-
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     def validate_board(self, board: Board) -> Board:
         if board.is_deleted:
             raise NotFound('Доска не найдена')
         if not BoardParticipant.objects.filter(
-            board=board, user=self.context['request'].user, role__in=[Role.owner, Role.writer]
+            board=board,
+            user=self.context['request'].user,
+            role__in=[Role.owner, Role.writer],
         ).exists():
             raise PermissionDenied('Нет доступа к этой категории')
         return board
@@ -79,18 +90,13 @@ class GoalCategoryCreateSerializer(serializers.ModelSerializer):
 
 
 class GoalCategorySerializer(GoalCategoryCreateSerializer):
-    """Сериализатор для получения категории целей"""
-
     user = ProfileSerializer(read_only=True)
 
 
 class GoalCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания цели"""
-
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     def validate_category(self, category: GoalCategory) -> GoalCategory:
-        """Проверка категории цели, проверяет, что категория не удалена и принадлежит текущему пользователю"""
         if category.is_deleted:
             raise NotFound('Доска не найдена')
         if not BoardParticipant.objects.filter(
@@ -108,8 +114,6 @@ class GoalCreateSerializer(serializers.ModelSerializer):
 
 
 class GoalSerializer(serializers.ModelSerializer):
-    """Сериализатор для получения цели"""
-
     user = ProfileSerializer(read_only=True)
 
     class Meta:
@@ -119,12 +123,9 @@ class GoalSerializer(serializers.ModelSerializer):
 
 
 class GoalCommentCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания комментария к цели"""
-
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     def validate_goal(self, goal: Goal) -> Goal:
-        """Проверка цели, проверяет, что цель не архивирована и принадлежит текущему пользователю"""
         if goal.status == Status.archived:
             raise NotFound('Доска не найдена')
         if not BoardParticipant.objects.filter(
@@ -142,8 +143,6 @@ class GoalCommentCreateSerializer(serializers.ModelSerializer):
 
 
 class GoalCommentSerializer(serializers.ModelSerializer):
-    """Сериализатор для получения комментария к цели"""
-
     user = ProfileSerializer(read_only=True)
     goal = serializers.PrimaryKeyRelatedField(read_only=True)
 

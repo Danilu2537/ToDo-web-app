@@ -1,6 +1,10 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    CreateAPIView,
+    ListAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
 from rest_framework.permissions import IsAuthenticated
 
 from goals.choices import Status
@@ -35,7 +39,11 @@ class GoalListView(ListAPIView):
 
     permission_classes = [IsAuthenticated]
     serializer_class = GoalSerializer
-    filter_backends = [filters.OrderingFilter, filters.SearchFilter, DjangoFilterBackend]
+    filter_backends = [
+        filters.OrderingFilter,
+        filters.SearchFilter,
+        DjangoFilterBackend,
+    ]
     filterset_class = GoalDateFilter
     ordering_fields = ['title', 'description']
     ordering = ['title']
@@ -44,5 +52,6 @@ class GoalListView(ListAPIView):
     def get_queryset(self):
         """Получение списка целей для текущего пользователя"""
         return Goal.objects.filter(
-            category__board__participants__user=self.request.user, category__is_deleted=False
+            category__board__participants__user=self.request.user,
+            category__is_deleted=False,
         ).exclude(status=Status.archived)

@@ -11,7 +11,10 @@ class CustomUserAdmin(UserAdmin):
     list_display = ('id', 'username')
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Персональная информация', {'fields': ('first_name', 'last_name', 'email')}),
+        (
+            'Персональная информация',
+            {'fields': ('first_name', 'last_name', 'email')},
+        ),
         ('Доступы', {'fields': ('is_active', 'is_staff')}),
         ('Даты', {'fields': ('last_login', 'date_joined')}),
     )
