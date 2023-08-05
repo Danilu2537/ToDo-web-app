@@ -130,6 +130,14 @@ class Command(BaseCommand):
     def handle_auth_user(self, tg_user: TgUser, message: Message):
         if message.text.startswith('/'):
             match message.text:
+                case '/start':
+                    self._bot.send_message(
+                        message.chat.id,
+                        f'Список команд:\n'
+                        '  /goals - список целей\n'
+                        '  /create - создать цель\n'
+                        '  /cancel - отменить операцию',
+                    )
                 case '/goals':
                     text = (
                         Goal.objects.all()
