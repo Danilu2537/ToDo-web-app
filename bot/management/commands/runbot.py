@@ -7,11 +7,10 @@ from goals.models import Goal, GoalCategory
 
 send_message = TgClient().send_message
 
+
 class FSM:
     def __init__(self):
-        """
-        
-        """
+        """ """
         self.create_list: list[callable] = [
             self.get_category,
             self.get_title,
@@ -36,9 +35,7 @@ class FSM:
             'Введите название категории'
         )
         send_message(message.chat.id, message_text)
-        self.users[message.chat.id] = self.UserState(
-            user, self.create_list
-        )
+        self.users[message.chat.id] = self.UserState(user, self.create_list)
         return True
 
     def get_category(self, message: Message, user: TgUser):
@@ -46,9 +43,7 @@ class FSM:
             title=message.text, user=user.user
         ).first()
         if not goal_category:
-            send_message(
-                message.chat.id, f'Категория "{message.text}" не найдена'
-            )
+            send_message(message.chat.id, f'Категория "{message.text}" не найдена')
             return None
         send_message(
             message.chat.id, f'Категория "{message.text}"\n' f'Введите название цели'
@@ -81,9 +76,7 @@ class FSM:
                     self.step = next(self.steps)
                 except StopIteration:
                     goal = Goal.objects.create(user=self.user.user, **self.items)
-                    send_message(
-                        self.user.chat_id, f'Цель "{goal.title}" создана!'
-                    )
+                    send_message(self.user.chat_id, f'Цель "{goal.title}" создана!')
                     return True
 
 

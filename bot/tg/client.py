@@ -9,9 +9,9 @@ from bot.tg.schemas import GetUpdatesResponse, SendMessageResponse
 
 logger = logging.getLogger(__name__)
 
-D
+
 class TgClientError(Exception):
-    pass
+    ...
 
 
 T = TypeVar('T', bound=GetUpdatesResponse | SendMessageResponse)
