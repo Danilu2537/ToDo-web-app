@@ -5,13 +5,7 @@ from rest_framework.exceptions import NotFound, PermissionDenied
 from core.models import User
 from core.serializers import ProfileSerializer
 from goals.choices import Role, Status
-from goals.models import (
-    Board,
-    BoardParticipant,
-    Goal,
-    GoalCategory,
-    GoalComment,
-)
+from goals.models import Board, BoardParticipant, Goal, GoalCategory, GoalComment
 
 
 class ParticipantSerializer(serializers.ModelSerializer):
@@ -51,16 +45,14 @@ class BoardWithParticipantsSerializer(BoardSerializer):
                         old_participant.role
                         != new_by_id[old_participant.user_id]['role']
                     ):
-                        old_participant.role = new_by_id[
-                            old_participant.user_id
-                        ]['role']
+                        old_participant.role = new_by_id[old_participant.user_id][
+                            'role'
+                        ]
                         old_participant.save()
                     new_by_id.pop(old_participant.user_id)
             for new_part in new_by_id.values():
                 BoardParticipant.objects.create(
-                    board=instance,
-                    user=new_part['user'],
-                    role=new_part['role'],
+                    board=instance, user=new_part['user'], role=new_part['role']
                 )
 
             instance.title = validated_data['title']

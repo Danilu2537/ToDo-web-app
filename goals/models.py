@@ -4,12 +4,8 @@ from goals.choices import Priority, Role, Status
 
 
 class BaseGoalsModel(models.Model):
-    created = models.DateTimeField(
-        auto_now_add=True, verbose_name='Дата создания'
-    )
-    updated = models.DateTimeField(
-        auto_now=True, verbose_name='Дата обновления'
-    )
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    updated = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
 
     class Meta:
         abstract = True
@@ -58,10 +54,7 @@ class BoardParticipant(BaseGoalsModel):
 
 class GoalCategory(BaseGoalsModel):
     board = models.ForeignKey(
-        Board,
-        on_delete=models.PROTECT,
-        related_name='categories',
-        verbose_name='Доска',
+        Board, on_delete=models.PROTECT, related_name='categories', verbose_name='Доска'
     )
     title = models.CharField(max_length=255, verbose_name='Название')
     user = models.ForeignKey(
@@ -84,9 +77,7 @@ class Goal(BaseGoalsModel):
         choices=Status.choices, default=Status.to_do, verbose_name='Статус'
     )
     priority = models.PositiveSmallIntegerField(
-        choices=Priority.choices,
-        default=Priority.medium,
-        verbose_name='Приоритет',
+        choices=Priority.choices, default=Priority.medium, verbose_name='Приоритет'
     )
     category = models.ForeignKey(
         'GoalCategory', on_delete=models.PROTECT, verbose_name='Категория'
@@ -107,9 +98,7 @@ class GoalComment(BaseGoalsModel):
     user = models.ForeignKey(
         'core.User', on_delete=models.PROTECT, verbose_name='Автор'
     )
-    goal = models.ForeignKey(
-        'Goal', on_delete=models.PROTECT, verbose_name='Цель'
-    )
+    goal = models.ForeignKey('Goal', on_delete=models.PROTECT, verbose_name='Цель')
     text = models.TextField(verbose_name='Текст')
 
     class Meta:
