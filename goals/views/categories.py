@@ -12,10 +12,7 @@ from goals.choices import Status
 from goals.filters import GoalCategoryFilter
 from goals.models import GoalCategory
 from goals.permissions import GoalCategoryPermission
-from goals.serializers import (
-    GoalCategoryCreateSerializer,
-    GoalCategorySerializer,
-)
+from goals.serializers import GoalCategoryCreateSerializer, GoalCategorySerializer
 
 
 class GoalCategoryCreateView(CreateAPIView):

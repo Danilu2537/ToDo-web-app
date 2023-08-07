@@ -34,9 +34,7 @@ class TgUser(models.Model):
         return ''.join(random.choices('0123456789', k=4))
 
     def update_verification_code(self, drop: bool = False) -> None:
-        self.verification_code = (
-            None if drop else self._generate_verification_code()
-        )
+        self.verification_code = None if drop else self._generate_verification_code()
         self.save(update_fields=['verification_code'])
 
     def __str__(self):

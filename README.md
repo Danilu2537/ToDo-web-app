@@ -78,4 +78,3 @@ The project is about goal management. Each user has access to goals that they ca
 API documentation after runnning is available at: \
     http://localhost:8000/schema \
     http://localhost:8000/schema/swagger-ui
-

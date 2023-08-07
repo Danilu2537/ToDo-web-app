@@ -72,15 +72,12 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'
+        'NAME': 'django.contrib.auth.password_validation'
+        '.UserAttributeSimilarityValidator'
     },
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'
-    },
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 LANGUAGE_CODE = 'ru-ru'
@@ -126,9 +123,7 @@ SPECTACULAR_SETTINGS = {
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {'format': '%(levelname)s %(asctime)s %(message)s'}
-    },
+    'formatters': {'verbose': {'format': '%(levelname)s %(asctime)s %(message)s'}},
     'handlers': {
         'console': {
             'level': 'DEBUG' if DEBUG else 'INFO',

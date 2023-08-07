@@ -9,7 +9,7 @@ from bot.tg.schemas import GetUpdatesResponse, SendMessageResponse
 
 logger = logging.getLogger(__name__)
 
-
+D
 class TgClientError(Exception):
     pass
 
@@ -28,14 +28,10 @@ class TgClient:
     def get_updates(
         self, offset: int = 0, timeout: int = 0, **kwargs
     ) -> GetUpdatesResponse:
-        data = self._get(
-            'getUpdates', offset=offset, timeout=timeout, **kwargs
-        )
+        data = self._get('getUpdates', offset=offset, timeout=timeout, **kwargs)
         return self.__serialize_tg_response(GetUpdatesResponse, data)
 
-    def send_message(
-        self, chat_id: int, text: str, **kwargs
-    ) -> SendMessageResponse:
+    def send_message(self, chat_id: int, text: str, **kwargs) -> SendMessageResponse:
         data = self._get('sendMessage', chat_id=chat_id, text=text, **kwargs)
         return self.__serialize_tg_response(SendMessageResponse, data)
 
@@ -45,9 +41,7 @@ class TgClient:
         response = requests.get(url, params=params)
         if not response.ok:
             logger.warning(
-                'Invalid status code %d from command %s',
-                response.status_code,
-                method,
+                'Invalid status code %d from command %s', response.status_code, method
             )
             raise TgClientError
         return response.json()
@@ -58,4 +52,4 @@ class TgClient:
             return serializer_class(**data)
         except ValidationError:
             logger.error('Failed to serialize telegram response: %s', data)
-            raise TgClientError
+            raise TgClientError from ValidationError
