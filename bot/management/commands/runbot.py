@@ -5,10 +5,10 @@ from bot.tg.client import TgClient
 from bot.tg.schemas import Message
 from goals.models import Goal, GoalCategory
 
+send_message = TgClient().send_message
 
 class FSM:
-    def __init__(self, send_message: callable):
-        self.send_message: callable = send_message
+    def __init__(self):
         self.create_list: list[callable] = [
             self.get_category,
             self.get_title,
@@ -34,9 +34,9 @@ class FSM:
             f'Ваши категории:\n   {categories}\n'
             'Введите название категории'
         )
-        self.send_message(message.chat.id, message_text)
+        send_message(message.chat.id, message_text)
         self.users[message.chat.id] = self.UserState(
-            user, self.create_list, self.send_message
+            user, self.create_list, send_message
         )
         return True
 
@@ -45,7 +45,7 @@ class FSM:
             title=message.text, user=user.user
         ).first()
         if not goal_category:
-            self.send_message(
+            send_message(
                 message.chat.id, f'Категория "{message.text}" не найдена'
             )
             return None
@@ -57,21 +57,20 @@ class FSM:
 
     def get_title(self, message: Message, user: TgUser):
         if not message.text:
-            self.send_message(message.chat.id, 'Введите название цели')
+            send_message(message.chat.id, 'Введите название цели')
             return None
-        self.send_message(message.chat.id, f'Цель "{message.text}"')
-        self.send_message(message.chat.id, 'Введите описание')
+        send_message(message.chat.id, f'Цель "{message.text}"')
+        send_message(message.chat.id, 'Введите описание')
         return {'title': message.text}
 
     def get_description(self, message: Message, user: TgUser):
-        self.send_message(message.chat.id, f'Описание "{message.text}"\n')
+        send_message(message.chat.id, f'Описание "{message.text}"\n')
         return {'description': message.text}
 
     class UserState:
         def __init__(
-            self, user: TgUser, steps: list[callable], send_message: callable
+            self, user: TgUser, steps: list[callable]
         ):
-            self.send_message = send_message
             self.user = user
             self.items = {}
             self.steps = iter(steps)
@@ -86,7 +85,7 @@ class FSM:
                     goal = Goal.objects.create(
                         user=self.user.user, **self.items
                     )
-                    self.send_message(
+                    send_message(
                         self.user.chat_id, f'Цель "{goal.title}" создана!'
                     )
                     return True
@@ -96,7 +95,7 @@ class Command(BaseCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._bot = TgClient()
-        self.FSM = FSM(self._bot.send_message)
+        self.FSM = FSM()
 
     def handle(self, *args, **options):
         offset = 0
