@@ -48,8 +48,6 @@ class UpdatePasswordSerializer(serializers.Serializer):
     new_password = PasswordField()
 
     def validate_old_password(self, attrs: dict) -> dict:
-        if not self.context['request'].user.check_password(
-            attrs['old_password']
-        ):
+        if not self.context['request'].user.check_password(attrs['old_password']):
             raise serializers.ValidationError('Invalid password')
         return attrs

@@ -1,6 +1,5 @@
 from django.db import transaction
 from django.http import JsonResponse
-from django.shortcuts import render
 from rest_framework.views import APIView
 
 from bot.models import TgUser
@@ -11,9 +10,7 @@ class TgUserVerifyView(APIView):
         with transaction.atomic():
             try:
                 verification_code = request.data.get('verification_code')
-                tg_user = TgUser.objects.get(
-                    verification_code=verification_code
-                )
+                tg_user = TgUser.objects.get(verification_code=verification_code)
                 tg_user.update_verification_code(drop=True)
                 tg_user.user = request.user
                 tg_user.save()
@@ -26,6 +23,4 @@ class TgUserVerifyView(APIView):
                     },
                 )
             except TgUser.DoesNotExist:
-                return JsonResponse(
-                    status=403, data={'detail': 'Неверный код'}
-                )
+                return JsonResponse(status=403, data={'detail': 'Неверный код'})

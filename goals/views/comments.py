@@ -9,10 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from goals.models import GoalComment
 from goals.permissions import GoalCommentPermission
-from goals.serializers import (
-    GoalCommentCreateSerializer,
-    GoalCommentSerializer,
-)
+from goals.serializers import GoalCommentCreateSerializer, GoalCommentSerializer
 
 
 class GoalCommentCreateView(CreateAPIView):

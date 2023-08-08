@@ -22,7 +22,5 @@ class GoalDateFilter(FilterSet):
         }
 
     filter_overrides = {
-        models.DateTimeField: {
-            'filter_class': django_filters.IsoDateTimeFilter
-        }
+        models.DateTimeField: {'filter_class': django_filters.IsoDateTimeFilter}
     }
