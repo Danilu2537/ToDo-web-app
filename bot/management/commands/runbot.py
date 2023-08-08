@@ -8,7 +8,7 @@ from goals.models import Goal, GoalCategory
 send_message = TgClient().send_message
 
 
-class FSM
+class FSM:
     """
     Finite State Machine
     """
