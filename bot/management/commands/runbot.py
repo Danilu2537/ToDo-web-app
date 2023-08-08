@@ -12,8 +12,8 @@ class FSM:
     """
     Finite State Machine
     """
-    def __init__(self, send_message: callable):
-        self.send_message: callable = send_message
+
+    def __init__(self):
         self.create_list: list[callable] = [
             self.get_category,
             self.get_title,
@@ -69,10 +69,8 @@ class FSM:
         """
         User state for FSM
         """
-        def __init__(
-            self, user: TgUser, steps: list[callable], send_message: callable
-        ):
-            self.send_message = send_message
+
+        def __init__(self, user: TgUser, steps: list[callable]):
             self.user = user
             self.items = {}
             self.steps = iter(steps)
@@ -85,7 +83,9 @@ class FSM:
                     self.step = next(self.steps)
                 except StopIteration:
                     goal = Goal.objects.create(user=self.user.user, **self.items)
-                    send_message(self.user.chat_id, f'Цель "{goal.title}" создана!')
+                    self.send_message(
+                        self.user.chat_id, f'Цель "{goal.title}" создана!'
+                    )
                     return True
 
 
@@ -93,7 +93,7 @@ class Command(BaseCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._bot = TgClient()
-        self.FSM = FSM(self._bot.send_message)
+        self.FSM = FSM()
 
     def handle(self, *args, **options):
         offset = 0
@@ -109,10 +109,10 @@ class Command(BaseCommand):
             chat_id=message.chat.id, defaults={'username': message.chat.username}
         )
         if created:
-            self._bot.send_message(message.chat.id, f'Здравствуйте {tg_user.username}!')
+            send_message(message.chat.id, f'Здравствуйте {tg_user.username}!')
         if not tg_user.is_verified:
             tg_user.update_verification_code()
-            self._bot.send_message(
+            send_message(
                 message.chat.id, f'Ваш код подтверждения: {tg_user.verification_code}'
             )
         else:
@@ -122,7 +122,7 @@ class Command(BaseCommand):
         if message.text.startswith('/'):
             match message.text:
                 case '/start':
-                    self._bot.send_message(
+                    send_message(
                         message.chat.id,
                         'Список команд:\n'
                         '  /goals - список целей\n'
@@ -142,23 +142,21 @@ class Command(BaseCommand):
                         for item in text
                     ]
                     text = '\n'.join(text)
-                    self._bot.send_message(message.chat.id, f'Список целей:\n{text}')
+                    send_message(message.chat.id, f'Список целей:\n{text}')
                 case '/create':
                     self.FSM.start_create(message, tg_user)
                 case '/cancel':
                     if self.FSM[message.chat.id]:
                         self.FSM.drop(message.chat.id)
-                        self._bot.send_message(message.chat.id, 'Операция отменена')
+                        send_message(message.chat.id, 'Операция отменена')
                     else:
-                        self._bot.send_message(message.chat.id, 'Нечего отменять')
+                        send_message(message.chat.id, 'Нечего отменять')
                 case _:
-                    self._bot.send_message(message.chat.id, 'Неизвестная команда')
+                    send_message(message.chat.id, 'Неизвестная команда')
 
         else:
             if not (state := self.FSM[message.chat.id]):
-                self._bot.send_message(
-                    message.chat.id, 'Напишите команду /create чтобы начать.'
-                )
+                send_message(message.chat.id, 'Напишите команду /create чтобы начать.')
             else:
                 if state(message, tg_user):
                     self.FSM.drop(message.chat.id)
