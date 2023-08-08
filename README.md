@@ -7,11 +7,11 @@ The project is about goal management. Each user has access to goals that they ca
 
 ---
 
-- Python 3.11
+-  Python 3.11
 - Django 4.2.3
 - Django REST Framework 3.14.0
-- VK Social Auth
-- PostgreSQL
+- (VK) Social Auth 5.2.0
+- PostgreSQL 15.1
 - Docker
 - Docker-compose
 
