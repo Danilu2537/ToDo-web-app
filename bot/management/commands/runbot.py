@@ -7,6 +7,9 @@ from goals.models import Goal, GoalCategory
 
 
 class FSM:
+    """
+    Finite State Machine
+    """
     def __init__(self, send_message: callable):
         self.send_message: callable = send_message
         self.create_list: list[callable] = [
@@ -68,6 +71,9 @@ class FSM:
         return {'description': message.text}
 
     class UserState:
+        """
+        User state for FSM
+        """
         def __init__(
             self, user: TgUser, steps: list[callable], send_message: callable
         ):
