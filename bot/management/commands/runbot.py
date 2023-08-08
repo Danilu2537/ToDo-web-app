@@ -8,9 +8,12 @@ from goals.models import Goal, GoalCategory
 send_message = TgClient().send_message
 
 
-class FSM:
-    def __init__(self):
-        """ """
+class FSM
+    """
+    Finite State Machine
+    """
+    def __init__(self, send_message: callable):
+        self.send_message: callable = send_message
         self.create_list: list[callable] = [
             self.get_category,
             self.get_title,
@@ -63,7 +66,13 @@ class FSM:
         return {'description': message.text}
 
     class UserState:
-        def __init__(self, user: TgUser, steps: list[callable]):
+        """
+        User state for FSM
+        """
+        def __init__(
+            self, user: TgUser, steps: list[callable], send_message: callable
+        ):
+            self.send_message = send_message
             self.user = user
             self.items = {}
             self.steps = iter(steps)
