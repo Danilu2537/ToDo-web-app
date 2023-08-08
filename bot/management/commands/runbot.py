@@ -83,7 +83,7 @@ class FSM:
                     self.step = next(self.steps)
                 except StopIteration:
                     goal = Goal.objects.create(user=self.user.user, **self.items)
-                    self.send_message(
+                    send_message(
                         self.user.chat_id, f'Цель "{goal.title}" создана!'
                     )
                     return True
