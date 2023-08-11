@@ -66,7 +66,7 @@ class GoalCategoryCreateSerializer(serializers.ModelSerializer):
 
     def validate_board(self, board: Board) -> Board:
         if board.is_deleted:
-            raise NotFound('Доска не найдена')
+            raise serializers.ValidationError('Доска не найдена')
         if not BoardParticipant.objects.filter(
             board=board,
             user=self.context['request'].user,
@@ -90,7 +90,7 @@ class GoalCreateSerializer(serializers.ModelSerializer):
 
     def validate_category(self, category: GoalCategory) -> GoalCategory:
         if category.is_deleted:
-            raise NotFound('Доска не найдена')
+            raise serializers.ValidationError('Категория не найдена')
         if not BoardParticipant.objects.filter(
             board=category.board,
             user=self.context['request'].user,

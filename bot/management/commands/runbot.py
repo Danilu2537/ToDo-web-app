@@ -49,7 +49,7 @@ class FSM:
             send_message(message.chat.id, f'Категория "{message.text}" не найдена')
             return None
         send_message(
-            message.chat.id, f'Категория "{message.text}"\n' f'Введите название цели'
+            message.chat.id, f'Категория "{message.text}"\nВведите название цели'
         )
         return {'category': goal_category}
 
@@ -83,9 +83,7 @@ class FSM:
                     self.step = next(self.steps)
                 except StopIteration:
                     goal = Goal.objects.create(user=self.user.user, **self.items)
-                    send_message(
-                        self.user.chat_id, f'Цель "{goal.title}" создана!'
-                    )
+                    send_message(self.user.chat_id, f'Цель "{goal.title}" создана!')
                     return True
 
 

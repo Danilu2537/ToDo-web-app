@@ -23,10 +23,17 @@ drf-spectacular = "^0.26.4"
 pre-commit = "^3.3.3"
 django-extensions = "^3.2.3"
 ruff = "^0.0.282"
+pytest = "^7.4.0"
+pytest-django = "^4.5.2"
+pytest-factoryboy = "^2.5.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "todolist.settings"
+python_files = ['tests.py', 'test_*.py', '*_tests.py']
 
 [tool.black]
 line-length = 88
