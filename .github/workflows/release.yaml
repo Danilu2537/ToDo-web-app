@@ -9,6 +9,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  permissions:
+    checks: write
+    pull-requests: write
 
   ruff:
     uses: Danilu2537/ToDo-web-app/.github/workflows/_ruff.yaml@master
@@ -16,7 +19,7 @@ jobs:
   pytest:
     needs: ruff
     uses: Danilu2537/ToDo-web-app/.github/workflows/_pytest.yaml@master
-    
+
   ci:
     needs: pytest
     uses: Danilu2537/ToDo-web-app/.github/workflows/_build_and_push.yaml@master
