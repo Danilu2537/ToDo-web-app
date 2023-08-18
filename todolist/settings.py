@@ -10,6 +10,7 @@ if ENV_PATH.is_file():
 SECRET_KEY = env.str('SECRET_KEY')
 
 DEBUG = env.bool('DEBUG', default=False)
+TESTING = env.bool('TESTING', default=False)
 
 ALLOWED_HOSTS = ['*']
 
@@ -101,7 +102,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'core.User'
 
 
-if not env.bool('TESTING', default=False):
+if not TESTING:
     SOCIAL_AUTH_VK_OAUTH2_KEY = env.str('SOCIAL_AUTH_VK_OAUTH2_KEY')
     SOCIAL_AUTH_VK_OAUTH2_SECRET = env.str('SOCIAL_AUTH_VK_OAUTH2_SECRET')
     BOT_TOKEN = env.str('BOT_TOKEN')
@@ -128,35 +129,36 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {'verbose': {'format': '%(levelname)s %(asctime)s %(message)s'}},
-    'handlers': {
-        'console': {
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+if not TESTING:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {'verbose': {'format': '%(levelname)s %(asctime)s %(message)s'}},
+        'handlers': {
+            'console': {
+                'level': 'DEBUG' if DEBUG else 'INFO',
+                'class': 'logging.StreamHandler',
+                'formatter': 'verbose',
+            },
+            'file': {
+                'level': 'DEBUG' if DEBUG else 'INFO',
+                'class': 'logging.FileHandler',
+                'filename': BASE_DIR.joinpath('logs', 'debug.log'),
+                'formatter': 'verbose',
+            },
         },
-        'file': {
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR.joinpath('logs', 'debug.log'),
-            'formatter': 'verbose',
+        'loggers': {
+            'django': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
+            'urllib3': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG',
+                'propagate': True,
+            },
         },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'urllib3': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
+    }
 
 
