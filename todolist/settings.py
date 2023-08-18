@@ -68,7 +68,7 @@ DATABASES = {
         'HOST': env.str('POSTGRES_HOST', default='127.0.0.1'),
         'PORT': env.str('POSTGRES_PORT', default='5432'),
     }
-    if 'postgres' in env.str('DB_ENGINE', '').lower()
+    if 'postgres' in env.str('DB_ENGINE').lower()
     else {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
