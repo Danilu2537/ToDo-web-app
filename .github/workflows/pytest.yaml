@@ -1,0 +1,11 @@
+name: PyTest
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    -
+      name: Pytest
+      uses: wilig/python-poetry-pytest-github-action
+      with:
+        args: poetry install && poetry run pytest
