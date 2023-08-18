@@ -9,7 +9,7 @@ jobs:
   build:
     env:
       SECRET_KEY: pytest_super_secret
-      DB_ENGINE: django.db.backends.sqlite3
+      TESTING: 1
     runs-on: ubuntu-latest
     strategy:
       matrix:
