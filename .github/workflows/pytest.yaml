@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install pytest
-        run: pip install pytest-django
+        run: pip install poetry && poetry install
       - name: Test with pytest
         run: pytest --junit-xml=test-results.xml
       - name: Publish Test Results
