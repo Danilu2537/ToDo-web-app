@@ -21,7 +21,7 @@ jobs:
       - name: Install pytest
         run: pip install poetry && poetry install
       - name: Test with pytest
-        run: pytest --junit-xml=test-results.xml
+        run: poetry shell && pytest --junit-xml=test-results.xml
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
