@@ -67,6 +67,33 @@ class TestCreateGoalView:
         }
 
 
+@pytest.mark.django_db()
+class TestListGoalView:
+    url = reverse('goals:list-goal')
+
+    def test_auth_required(self, client):
+        response = client.get(self.url)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.usefixtures('board_participant')
+    def test_list_goals(self, auth_client, goal_category, goal_factory):
+        goal_category.user = auth_client.user
+        goals = goal_factory.create_batch(
+            5, category=goal_category, user=auth_client.user
+        )
+
+        response = auth_client.get(self.url, category__in=goal_category.id)
+        response_data = sorted(response.json(), key=lambda goal: goal.get('id'))
+        expected_response_data = sorted(
+            [_serialize_response(goal) for goal in goals],
+            key=lambda goal: goal.get('id'),
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response_data) == 5
+        assert response_data == expected_response_data
+
+
 def _serialize_response(goal: Goal, **kwargs) -> dict:
     data = {
         'id': goal.id,

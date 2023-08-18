@@ -114,6 +114,12 @@ class GoalSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'created', 'updated', 'user')
 
 
+class GoalListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Goal
+        exclude = ('user',)
+
+
 class GoalCommentCreateSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 

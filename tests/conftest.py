@@ -1,8 +1,6 @@
 import pytest
 from rest_framework.test import APIClient
 
-from core.models import User
-
 pytest_plugins = 'tests.factories'
 
 
@@ -13,7 +11,7 @@ def client() -> APIClient:
 
 @pytest.fixture()
 @pytest.mark.django_db
-def auth_client(client):
-    client.user = User.objects.create_user(username='test', password='test')
-    client.login(username='test', password='test')
+def auth_client(client, user):
+    client.user = user
+    client.force_login(client.user)
     return client

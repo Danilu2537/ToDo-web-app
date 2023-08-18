@@ -11,7 +11,7 @@ from goals.choices import Status
 from goals.filters import GoalDateFilter
 from goals.models import Goal
 from goals.permissions import GoalPermission
-from goals.serializers import GoalCreateSerializer, GoalSerializer
+from goals.serializers import GoalCreateSerializer, GoalListSerializer, GoalSerializer
 
 
 class GoalCreateView(CreateAPIView):
@@ -38,7 +38,7 @@ class GoalListView(ListAPIView):
     """Вью для получения списка целей"""
 
     permission_classes = [IsAuthenticated]
-    serializer_class = GoalSerializer
+    serializer_class = GoalListSerializer
     filter_backends = [
         filters.OrderingFilter,
         filters.SearchFilter,
