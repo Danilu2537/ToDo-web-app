@@ -68,7 +68,7 @@ DATABASES = {
         'HOST': env.str('POSTGRES_HOST', default='127.0.0.1'),
         'PORT': env.str('POSTGRES_PORT', default='5432'),
     }
-    if 'postgres' in env.str('DB_ENGINE').lower()
+    if not env.str('TESTING', default=False)
     else {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
@@ -100,13 +100,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'core.User'
 
-SOCIAL_AUTH_JSONFIELD_ENABLED = True
-SOCIAL_AUTH_VK_OAUTH2_KEY = env.str('SOCIAL_AUTH_VK_OAUTH2_KEY')
-SOCIAL_AUTH_VK_OAUTH2_SECRET = env.str('SOCIAL_AUTH_VK_OAUTH2_SECRET')
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
-SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/logged-in/'
-SOCIAL_AUTH_USER_MODEL = 'core.User'
-SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
+
+if not env.bool('TESTING', default=False):
+    SOCIAL_AUTH_VK_OAUTH2_KEY = env.str('SOCIAL_AUTH_VK_OAUTH2_KEY')
+    SOCIAL_AUTH_VK_OAUTH2_SECRET = env.str('SOCIAL_AUTH_VK_OAUTH2_SECRET')
+    BOT_TOKEN = env.str('BOT_TOKEN')
+    SOCIAL_AUTH_JSONFIELD_ENABLED = True
+    SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+    SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/logged-in/'
+    SOCIAL_AUTH_USER_MODEL = 'core.User'
+    SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.vk.VKOAuth2',
@@ -156,4 +159,4 @@ LOGGING = {
     },
 }
 
-BOT_TOKEN = env.str('BOT_TOKEN')
+
