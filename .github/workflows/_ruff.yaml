@@ -1,7 +1,8 @@
 name: Ruff check
-on: [ push, pull_request ]
+on: workflow_call
+
 jobs:
-  ruff:
+  check:
     runs-on: ubuntu-latest
     steps:
       -

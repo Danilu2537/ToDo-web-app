@@ -1,9 +1,6 @@
-name: ci
+name: CI
 
-on:
-  push:
-    branches:
-      - master
+on: workflow_call
 
 jobs:
   build:

@@ -1,0 +1,22 @@
+name: Release
+
+on:
+  push:
+    branches: master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  ruff:
+    uses: Danilu2537/ToDo-web-app/.github/workflows/_ruff.yaml@master
+
+  pytest:
+    needs: ruff
+    uses: Danilu2537/ToDo-web-app/.github/workflows/_pytest.yaml@master
+    
+  ci:
+    needs: pytest
+    uses: Danilu2537/ToDo-web-app/.github/workflows/_build_and_push.yaml@master
