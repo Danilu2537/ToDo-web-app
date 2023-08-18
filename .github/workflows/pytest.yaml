@@ -7,6 +7,8 @@ on:
 
 jobs:
   build:
+    env:
+      SECRET_KEY: pytest_super_secret
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,6 +23,7 @@ jobs:
       - name: Install pytest
         run: pip install poetry && poetry install
       - name: Test with pytest
+        environment:
         run: poetry run pytest --junit-xml=test-results.xml
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
