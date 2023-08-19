@@ -2,6 +2,20 @@ version: '3.8'
 
 services:
 
+  traefik:
+    container_name: gitlab_traefik
+    restart: unless-stopped
+    image: traefik:v1.7
+    command: --configFile=/var/traefik/traefik.toml
+    ports:
+      - "80:80"
+    networks:
+      - traefik_todo_net
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.toml:/var/traefik/traefik.toml:ro
+      - /srv/docker/volumes/traefik/log:/log
+
   db:
     image: postgres:15.1
     environment:
@@ -13,6 +27,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - todo_net
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -23,6 +39,8 @@ services:
       db:
         condition: service_healthy
     command: python manage.py migrate
+    networks:
+      - todo_net
 
   bot:
     image: ${DOCKERHUB_USER}/diplom:latest
@@ -33,6 +51,8 @@ services:
       run_migrations:
         condition: service_completed_successfully
     command: python manage.py runbot
+    networks:
+      - todo_net
 
   api:
     image: ${DOCKERHUB_USER}/diplom:latest
@@ -40,6 +60,8 @@ services:
     depends_on:
       run_migrations:
         condition: service_completed_successfully
+    networks:
+      - todo_net
 
   collect_static:
     image: ${DOCKERHUB_USER}/diplom:latest
@@ -51,16 +73,28 @@ services:
   frontend:
     image: sermalenk/skypro-front:lesson-38
     restart: on-failure
-    ports:
-      - "80:80"
     depends_on:
       api:
         condition: service_started
       collect_static:
         condition: service_completed_successfully
+    networks:
+      - todo_net
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - django_static:/usr/share/nginx/html/static/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.port=80"
+      - "traefik.frontend.backend=frontend"
+      - "traefik.frontend.frontend.rule=Host:ulinad.ru"
+      - "traefik.frontend.frontend.entryPoints=http"
+      - "traefik.docker.network=frontend_traefik_todo_net"
+
+networks:
+  traefik_todo_net:
+  todo_net:
+
 
 volumes:
   postgres_data:

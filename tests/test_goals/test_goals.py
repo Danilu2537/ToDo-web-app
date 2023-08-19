@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.serializers import DateTimeField
 
-from goals.choices import Role
+from goals.choices import Role, Status
 from goals.models import Goal
 from tests.test_goals.factories import CreateGoalRequest
 
@@ -92,6 +92,45 @@ class TestListGoalView:
         assert response.status_code == status.HTTP_200_OK
         assert len(response_data) == 5
         assert response_data == expected_response_data
+
+
+@pytest.mark.django_db()
+class TestRetrieveUpdateDestroyGoalView:
+    def test_auth_required(self, client, goal):
+        url = reverse('goals:detail-goal', args=(goal.id,))
+        response = client.get(url)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.usefixtures('board_participant')
+    def test_retrieve_goal(self, auth_client, goal):
+        url = reverse('goals:detail-goal', args=(goal.id,))
+        goal.user = auth_client.user
+        response = auth_client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+
+    @pytest.mark.usefixtures('board_participant')
+    def test_update_goal(self, auth_client, goal):
+        url = reverse('goals:detail-goal', args=(goal.id,))
+        goal.user = auth_client.user
+        data = {'title': 'new title'}
+        response = auth_client.patch(url, data=data)
+        data.update(
+            updated=DateTimeField().to_representation(
+                Goal.objects.get(id=goal.id).updated
+            )
+        )
+        response_data = response.json()
+        del response_data['user']
+        assert response.status_code == status.HTTP_200_OK
+        assert response_data == _serialize_response(goal, **data)
+
+    @pytest.mark.usefixtures('board_participant')
+    def test_destroy_goal(self, auth_client, goal):
+        url = reverse('goals:detail-goal', args=(goal.id,))
+        goal.user = auth_client.user
+        response = auth_client.delete(url)
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert Goal.objects.get(id=goal.id).status == Status.archived
 
 
 def _serialize_response(goal: Goal, **kwargs) -> dict:

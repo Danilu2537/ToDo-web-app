@@ -15,28 +15,21 @@ from goals.serializers import GoalCreateSerializer, GoalListSerializer, GoalSeri
 
 
 class GoalCreateView(CreateAPIView):
-    """Вью для создания цели"""
-
     permission_classes = [IsAuthenticated]
     serializer_class = GoalCreateSerializer
 
 
 class GoalView(RetrieveUpdateDestroyAPIView):
-    """Вью для получения, обновления и удаления цели"""
-
     serializer_class = GoalSerializer
     permission_classes = [GoalPermission]
     queryset = Goal.objects.exclude(status=Status.archived)
 
     def perform_destroy(self, instance):
-        """Архивирование цели при удалении"""
         instance.status = Status.archived
         instance.save()
 
 
 class GoalListView(ListAPIView):
-    """Вью для получения списка целей"""
-
     permission_classes = [IsAuthenticated]
     serializer_class = GoalListSerializer
     filter_backends = [
@@ -50,7 +43,6 @@ class GoalListView(ListAPIView):
     search_fields = ['title', 'description']
 
     def get_queryset(self):
-        """Получение списка целей для текущего пользователя"""
         return Goal.objects.filter(
             category__board__participants__user=self.request.user,
             category__is_deleted=False,

@@ -14,8 +14,6 @@ from goals.serializers import BoardSerializer, BoardWithParticipantsSerializer
 
 
 class BoardCreateView(CreateAPIView):
-    """Вью для создания доски"""
-
     serializer_class = BoardSerializer
     permission_classes = [IsAuthenticated]
 
@@ -26,8 +24,6 @@ class BoardCreateView(CreateAPIView):
 
 
 class BoardListView(ListAPIView):
-    """Вью для получения списка досок"""
-
     serializer_class = BoardSerializer
     permission_classes = [IsAuthenticated]
 
@@ -41,8 +37,6 @@ class BoardListView(ListAPIView):
 
 
 class BoardView(RetrieveUpdateDestroyAPIView):
-    """Вью для получения, обновления и удаления доски"""
-
     serializer_class = BoardWithParticipantsSerializer
     permission_classes = [BoardPermission]
 

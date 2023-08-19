@@ -76,15 +76,25 @@ class FSM:
             self.steps = iter(steps)
             self.step = next(self.steps)
 
-        def __call__(self, *args, **kwargs):
-            if item := self.step(*args, **kwargs):
-                self.items.update(item)
-                try:
-                    self.step = next(self.steps)
-                except StopIteration:
-                    goal = Goal.objects.create(user=self.user.user, **self.items)
-                    send_message(self.user.chat_id, f'Цель "{goal.title}" создана!')
-                    return True
+    def __call__(self, *args, **kwargs):
+        # Call the step function with the given arguments
+        item = self.step(*args, **kwargs)
+
+        # Update the items dictionary with the returned item
+        self.items.update(item)
+
+        try:
+            # Get the next step function from the steps iterator
+            self.step = next(self.steps)
+        except StopIteration:
+            # Create a new goal object with the user and items
+            goal = Goal.objects.create(user=self.user.user, **self.items)
+
+            # Send a message to the user with the created goal's title
+            send_message(self.user.chat_id, f'Цель "{goal.title}" создана!')
+
+            # Return True to indicate successful completion
+            return True
 
 
 class Command(BaseCommand):
@@ -94,25 +104,52 @@ class Command(BaseCommand):
         self.FSM = FSM()
 
     def handle(self, *args, **options):
+        # Initialize offset to keep track of the last update ID processed
         offset = 0
+
+        # Print a success message indicating that the bot has started
         self.stdout.write(self.style.SUCCESS('Bot started'))
+
+        # Continue running the bot indefinitely
         while True:
+            # Get updates from the bot with the offset and allowed update types
             updates = self._bot.get_updates(offset=offset, allowed_updates=['message'])
+
+            # Process each update
             for update in updates.result:
+                # Update the offset to the ID of the next update to be processed
                 offset = max(offset, update.update_id + 1)
+
+                # Handle the message contained in the update
                 self.handle_message(update.message)
 
     def handle_message(self, message: Message):
+        """
+        Handle incoming messages from the user.
+
+        Args:
+            message (Message): The incoming message object.
+
+        Returns:
+            None
+        """
+        # Get or create a TgUser object based on the message chat ID
         tg_user, created = TgUser.objects.get_or_create(
             chat_id=message.chat.id, defaults={'username': message.chat.username}
         )
+
+        # If a new user is created, send a welcome message
         if created:
             send_message(message.chat.id, f'Здравствуйте {tg_user.username}!')
+
+        # If the user is not verified, update the verification code and send it to user
         if not tg_user.is_verified:
             tg_user.update_verification_code()
             send_message(
                 message.chat.id, f'Ваш код подтверждения: {tg_user.verification_code}'
             )
+
+        # If the user is already verified, handle the authenticated user
         else:
             self.handle_auth_user(tg_user, message)
 
